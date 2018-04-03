@@ -1,3 +1,3 @@
-## Next
+## 0.1.0 - April 3, 2018
 
-- Deploy app using a custom `Dockerfile`
+- Deploy an app using a custom `Dockerfile`

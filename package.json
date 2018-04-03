@@ -1,0 +1,39 @@
+{
+  "name": "mup-docker-deploy",
+  "version": "0.1.0",
+  "description": "Plugin for Meteor Up to deploy an app using a Dockerfile",
+  "scripts": {
+    "prepare": "npm run build",
+    "build": "babel src --out-dir lib --sourceRoot=./ --copy-files --sourcemaps",
+    "build:watch": "npm run build -s -- -w",
+    "lint": "eslint .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "zodern",
+  "license": "MIT",
+  "keywords": [
+    "meteor-up"
+  ],
+  "main": "index.js",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^8.2.2",
+    "chai": "^4.1.2",
+    "eslint": "^4.18.2",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-plugin-import": "^2.9.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-react": "^7.7.0"
+  },
+  "dependencies": {
+    "contains-path": "^1.0.0",
+    "joi": "^12.0.0",
+    "mkdirp": "^0.5.1",
+    "random-seed": "^0.3.0",
+    "rimraf": "^2.6.2",
+    "tar": "^4.4.1",
+    "uuid": "^3.2.1"
+  }
+}

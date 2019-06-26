@@ -4,7 +4,7 @@ set -e
 APPNAME=<%= appName %>
 APP_PATH=/opt/$APPNAME
 ENV_FILE=$APP_PATH/config/env.list
-APP_IMAGE=mup-<%= appName.toLowerCase() %>:latest
+APP_IMAGE=<%= image %>
 BIND="0.0.0.0"
 PUBLISHED_PORT=<%= publishedPort %>
 EXPOSED_PORT=<%= exposedPort %>

@@ -114,6 +114,7 @@ export function reconfig(api, nodemiral) {
       docker: config.docker || {},
       publishedPort,
       exposedPort,
+      image: config.type === 'remote-image' ? config.image : `mup-${config.name.toLowerCase()}:latest`
     },
   });
 
@@ -155,12 +156,17 @@ export function stop(api, nodemiral) {
   return api.runTaskList(list, sessions, { verbose: api.verbose });
 }
 
-export function deploy(api) {
-  return api.runCommand('docker-deploy.bundle')
-    .then(() => api.runCommand('docker-deploy.push'))
-    .then(() => api.runCommand('docker-deploy.build'))
-    .then(() => api.runCommand('docker-deploy.reconfig'))
-    .then(() => api.runCommand('docker-deploy.start'));
+export async function deploy(api) {
+  const type = api.getConfig().app.type;
+
+  if (type !== 'remote-image') {
+    await api.runCommand('docker-deploy.bundle')
+      .then(() => api.runCommand('docker-deploy.push'))
+      .then(() => api.runCommand('docker-deploy.build'))
+  }
+
+  await api.runCommand('docker-deploy.reconfig');
+  await api.runCommand('docker-deploy.start');
 }
 
 export function logs(api) {

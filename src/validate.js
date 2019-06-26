@@ -3,6 +3,7 @@ import joi from 'joi';
 export const schema = joi.object().keys({
   name: joi.string().min(1).required(),
   path: joi.string().min(1).required(),
+  image: joi.string(),
   type: joi.string().required(),
   servers: joi.object().required().pattern(
     /[/s/S]*/,

@@ -6,13 +6,24 @@ export const description = 'Deploy an app using a docker image';
 
 export const commands = _commands;
 
+const appTypes = [
+  'docker-image',
+  'remote-image'
+];
+
 export const validate = {
-  app: validator,
+  app(config, utils) {
+    if (!config.app || !appTypes.includes(config.app.type)) {
+      return [];
+    }
+
+    return _validator(config, utils);
+  }
 };
 
 function runIfEnabled(...commandList) {
   return function run(api) {
-    if (api.getConfig().app && api.getConfig().app.type === 'docker-image') {
+    if (api.getConfig().app && appTypes.includes(api.getConfig().app.type)) {
       return commandList.reduce(
         (promise, command) => promise.then(() => api.runCommand(command)),
         Promise.resolve(),

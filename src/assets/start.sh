@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+set -x
 
 APPNAME=<%= appName %>
 APP_PATH=/opt/$APPNAME
@@ -19,7 +20,8 @@ sudo docker run \
   --hostname="$HOSTNAME-$APPNAME" \
   --env-file=$ENV_FILE \
   --name=$APPNAME \
-   <% for(var args in docker.args) { %> <%- docker.args[args] %> <% } %> \
+  <% for(var args in docker.args) { %> <%- docker.args[args] %> <% } %> \
+  <% for(var volume in volumes) { %>-v <%= volume %>:<%= volumes[volume] %> <% } %> \
   $APP_IMAGE
 
 echo "Started app's container"

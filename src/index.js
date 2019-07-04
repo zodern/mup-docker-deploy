@@ -8,7 +8,7 @@ export const commands = _commands;
 
 const appTypes = [
   'docker-image',
-  'remote-image'
+  'remote-image',
 ];
 
 export const validate = {
@@ -17,8 +17,8 @@ export const validate = {
       return [];
     }
 
-    return _validator(config, utils);
-  }
+    return validator(config, utils);
+  },
 };
 
 function runIfEnabled(...commandList) {

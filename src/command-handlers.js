@@ -93,7 +93,7 @@ export function reconfig(api, nodemiral) {
   const { env } = config;
 
   const publishedPort = env.PORT || 80;
-  const exposedPort = 3000;
+  const exposedPort = config.docker.imagePort || 3000;
 
   env.PORT = exposedPort;
 
@@ -114,7 +114,8 @@ export function reconfig(api, nodemiral) {
       docker: config.docker || {},
       publishedPort,
       exposedPort,
-      image: config.type === 'remote-image' ? config.image : `mup-${config.name.toLowerCase()}:latest`
+      image: config.type === 'remote-image' ? config.image : `mup-${config.name.toLowerCase()}:latest`,
+      volumes: config.volumes,
     },
   });
 
@@ -157,12 +158,12 @@ export function stop(api, nodemiral) {
 }
 
 export async function deploy(api) {
-  const type = api.getConfig().app.type;
+  const { type } = api.getConfig().app;
 
   if (type !== 'remote-image') {
     await api.runCommand('docker-deploy.bundle')
       .then(() => api.runCommand('docker-deploy.push'))
-      .then(() => api.runCommand('docker-deploy.build'))
+      .then(() => api.runCommand('docker-deploy.build'));
   }
 
   await api.runCommand('docker-deploy.reconfig');

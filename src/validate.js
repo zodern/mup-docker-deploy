@@ -2,7 +2,7 @@ import joi from 'joi';
 
 export const schema = joi.object().keys({
   name: joi.string().min(1).required(),
-  path: joi.string().min(1).required(),
+  path: joi.string().min(1),
   image: joi.string(),
   type: joi.string().required(),
   servers: joi.object().required().pattern(
@@ -13,7 +13,9 @@ export const schema = joi.object().keys({
   docker: joi.object().keys({
     args: joi.array().items(joi.string()),
     networks: joi.array().items(joi.string()),
+    imagePort: joi.number(),
   }).default(),
+  volumes: joi.object(),
 });
 
 export default function validate(config, utils) {

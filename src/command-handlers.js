@@ -97,15 +97,32 @@ export function reconfig(api, nodemiral) {
 
   env.PORT = exposedPort;
 
+  const hostVars = {};
+  Object.keys(config.servers).forEach(key => {
+    if (config.servers[key].env) {
+      hostVars[servers[key].host] = { env: config.servers[key].env };
+    }
+    if (config.servers[key].settings) {
+      const settings = JSON.stringify(api.getSettingsFromPath(
+        config.servers[key].settings));
+      if (hostVars[servers[key].host]) {
+        hostVars[servers[key].host].env.METEOR_SETTINGS = settings;
+      } else {
+        hostVars[servers[key].host] = { env: { METEOR_SETTINGS: settings } };
+      }
+    }
+  });
+
   list.copy('Sending Environment Variables', {
     src: api.resolvePath(__dirname, 'assets/env.list'),
     dest: `/opt/${config.name}/config/env.list`,
+    hostVars,
     vars: {
       env: env || {},
       appName: config.name,
     },
   });
-
+  
   list.copy('Sending Start Script', {
     src: api.resolvePath(__dirname, 'assets/start.sh'),
     dest: `/opt/${config.name}/config/start.sh`,

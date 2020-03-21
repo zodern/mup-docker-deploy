@@ -93,7 +93,7 @@ export function reconfig(api, nodemiral) {
   const { env } = config;
 
   const publishedPort = env.PORT || 80;
-  const exposedPort = config.docker.imagePort || 3000;
+  const exposedPort = (config.docker && config.docker.imagePort) || 3000;
 
   env.PORT = exposedPort;
 

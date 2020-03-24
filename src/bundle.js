@@ -32,11 +32,10 @@ export default function createBundle(appPath, tmpPath, api) {
         level: 9,
       },
       filter(_path) {
-        if (containsPath(_path, './.git')) {
-          console.log('.git');
+        if (containsPath(_path, '.git')) {
           return false;
-        } else if (containsPath(_path, './node_modules')) {
-          console.log('node_modules');
+        }
+        if (containsPath(_path, 'node_modules')) {
           return false;
         }
 

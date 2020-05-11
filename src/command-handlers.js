@@ -17,6 +17,14 @@ function tmpBuildPath(appPath, api) {
   );
 }
 
+function getImagePrefix(privateRegistry) {
+  if (privateRegistry && privateRegistry.imagePrefix) {
+    return `${privateRegistry.imagePrefix}/`;
+  }
+
+  return '';
+}
+
 export function setup(api, nodemiral) {
   const config = api.getConfig().app;
 
@@ -68,17 +76,22 @@ export function push(api, nodemiral) {
 }
 
 export function build(api, nodemiral) {
-  const config = api.getConfig().app;
+  const {
+    app: appConfig,
+    privateDockerRegistry,
+  } = api.getConfig();
   const list = nodemiral.taskList('Building Docker Image');
   const sessions = api.getSessions(['app']);
 
   list.executeScript('Build Image', {
     script: api.resolvePath(__dirname, 'assets/build-image.sh'),
     vars: {
-      appName: config.name,
+      appName: appConfig.name,
+      privateRegistry: privateDockerRegistry,
+      imagePrefix: getImagePrefix(privateDockerRegistry),
+      imageName: appConfig.name.toLowerCase(),
     },
   });
-
 
   return api.runTaskList(list, sessions, {
     series: true,
@@ -89,33 +102,39 @@ export function build(api, nodemiral) {
 export function reconfig(api, nodemiral) {
   const list = nodemiral.taskList('Configuring App');
   const sessions = api.getSessions(['app']);
-  const config = api.getConfig().app;
-  const { env } = config;
+  const {
+    app: appConfig,
+    privateDockerRegistry,
+  } = api.getConfig();
+  const { env } = appConfig;
 
   const publishedPort = env.PORT || 80;
-  const exposedPort = (config.docker && config.docker.imagePort) || 3000;
+  const exposedPort = (appConfig.docker && appConfig.docker.imagePort) || 3000;
 
   env.PORT = exposedPort;
 
   list.copy('Sending Environment Variables', {
     src: api.resolvePath(__dirname, 'assets/env.list'),
-    dest: `/opt/${config.name}/config/env.list`,
+    dest: `/opt/${appConfig.name}/config/env.list`,
     vars: {
       env: env || {},
-      appName: config.name,
+      appName: appConfig.name,
     },
   });
 
+  const localImageName = `${getImagePrefix(privateDockerRegistry)}${appConfig.name.toLowerCase()}:latest`;
+
   list.copy('Sending Start Script', {
     src: api.resolvePath(__dirname, 'assets/start.sh'),
-    dest: `/opt/${config.name}/config/start.sh`,
+    dest: `/opt/${appConfig.name}/config/start.sh`,
     vars: {
-      appName: config.name,
-      docker: config.docker || {},
+      appName: appConfig.name,
+      docker: appConfig.docker || {},
       publishedPort,
       exposedPort,
-      image: config.type === 'remote-image' ? config.image : `mup-${config.name.toLowerCase()}:latest`,
-      volumes: config.volumes,
+      image: appConfig.type === 'remote-image' ? appConfig.image : localImageName,
+      volumes: appConfig.volumes,
+      privateRegistry: privateDockerRegistry,
     },
   });
 

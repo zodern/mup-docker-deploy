@@ -1,3 +1,7 @@
+## 0.4.1 - April 20, 2022
+
+- Update deps
+
 ## 0.4.0 - May 10, 2020
 
 - Support private docker registries

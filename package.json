@@ -1,6 +1,6 @@
 {
   "name": "mup-docker-deploy",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Plugin for Meteor Up to deploy an app using a Dockerfile",
   "scripts": {
     "prepare": "npm run build",

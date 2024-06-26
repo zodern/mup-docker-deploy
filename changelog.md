@@ -1,3 +1,7 @@
+## 0.5.0 - June 26, 2024
+
+- Support host vars
+
 ## 0.4.1 - April 20, 2022
 
 - Update deps

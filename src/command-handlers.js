@@ -105,6 +105,7 @@ export function reconfig(api, nodemiral) {
   const {
     app: appConfig,
     privateDockerRegistry,
+    servers
   } = api.getConfig();
   const { env } = appConfig;
 
@@ -113,6 +114,22 @@ export function reconfig(api, nodemiral) {
 
   env.PORT = exposedPort;
 
+  let hostVars = {};
+  Object.keys(appConfig.servers).forEach(key => {
+    const host = servers[key].host;
+    if (appConfig.servers[key].env) {
+      hostVars[host] = {
+        env: {
+          ...appConfig.servers[key].env,
+          // We treat the PORT specially and do not pass it to the container
+          PORT: exposedPort
+        }
+      };
+    }
+  });
+
+  console.log(hostVars);
+
   list.copy('Sending Environment Variables', {
     src: api.resolvePath(__dirname, 'assets/env.list'),
     dest: `/opt/${appConfig.name}/config/env.list`,
@@ -120,6 +137,7 @@ export function reconfig(api, nodemiral) {
       env: env || {},
       appName: appConfig.name,
     },
+    hostVars
   });
 
   const localImageName = `${getImagePrefix(privateDockerRegistry)}${appConfig.name.toLowerCase()}:latest`;
